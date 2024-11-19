@@ -109,7 +109,10 @@ class FieldParser {
   /// - Returns: An optional value parsed out of the raw data
   ///
   String? parseFirstName() {
-    return parseString(FieldMapper.firstName, matchLineStartOnly: true);
+    final value = parseString(FieldMapper.firstName, matchLineStartOnly: true);
+    // Some states bring the middle name separated by `,`, `$` or ` ` inside
+    var parts = value?.split(RegExp(r'(,|(\s+)|\$)'));
+    return parts?.firstOrNull;
   }
 
   ///
@@ -117,7 +120,10 @@ class FieldParser {
   /// - Returns: An optional value parsed out of the raw data
   ///
   String? parseLastName() {
-    return parseString(FieldMapper.lastName, matchLineStartOnly: true);
+    final value = parseString(FieldMapper.lastName, matchLineStartOnly: true);
+    // Some states bring the middle name separated by `,`, `$` or ` ` inside
+    var parts = value?.split(RegExp(r'(,|(\s+)|\$)'));
+    return parts?.firstOrNull;
   }
 
   ///
@@ -157,10 +163,15 @@ class FieldParser {
   /// - Returns: An optional value parsed out of the raw data
   ///
   IssuingCountry parseCountry() {
-    final country = parseString(FieldMapper.country);
+    String? country = parseString(FieldMapper.country);
+
+    var parts = country?.split(RegExp(r'(,|(\s+)|\$)'));
+    country = parts?.firstOrNull;
+
     if (country == null) {
       return IssuingCountry.unknown;
     }
+
     switch (country) {
       case "USA":
         return IssuingCountry.unitedStates;
